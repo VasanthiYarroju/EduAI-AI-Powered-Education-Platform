@@ -1,15 +1,23 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+**/node_modules/
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+eduai-ec3f1-72e897816409.json
+firebase-service-account.json
 
 # production
 /build
+
+# Add this if not already present
+.env
+.env.development
+.env.production
+.env.test
 
 # misc
 .DS_Store
