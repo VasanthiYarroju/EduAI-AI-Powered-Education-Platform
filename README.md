@@ -1,70 +1,124 @@
-# Getting Started with Create React App
+# Edu-AI 🌟 — AI-Powered Learning Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Edu-AI is a personalized, community-driven learning platform that connects learners with skilled volunteers, AI-powered mock assessments, and personalized content recommendations.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- 🔐 Authentication (Google, Email)
+- 🎯 Learner & Volunteer Onboarding
+- 🧠 AI-Powered Mock Assessments (Gemini API)
+- 📹 Volunteer Video Uploads + AI Transcript Generation
+- 📚 Personalized Learning Path
+- 🏅 Badge System & Feedback
+- 💬 Real-Time Forums (Learners + Volunteers)
+- 🌐 Multi-language & Offline Support
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🧩 Solution Approach
 
-### `npm test`
+The following approach outlines how Edu-AI leverages AI and modern technology to deliver an inclusive, scalable, and effective educational experience:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Key components:**
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **Platform Development:**  
+   - Intuitive user interface for web and mobile  
+   - AI matching system for learners and volunteers
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. **Personalized Learning Pathways:**  
+   - AI-driven initial assessments  
+   - Adaptive, machine learning-powered curriculum
 
-### `npm run eject`
+3. **Content Creation and Curation:**  
+   - NLP-based content generation  
+   - AI-powered curation of open educational resources
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **Community Engagement and Support:**  
+   - AI-moderated forums and mentorship programs
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+5. **Performance Tracking and Feedback:**  
+   - Learning analytics  
+   - Progress reports
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+6. **Gamification and Motivation:**  
+   - AI-driven badges, rewards, and leaderboards
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+7. **Volunteer Management:**  
+   - AI for recruitment, matching, and training
 
-## Learn More
+8. **Accessibility and Inclusivity:**  
+   - Multilingual AI support  
+   - Accessibility features for users with disabilities
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+9. **Scalability and Sustainability:**  
+   - Cloud infrastructure  
+   - Partnerships, continuous improvement
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+## 🛠️ Tech Stack
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Frontend     | Backend      | AI & APIs     | Database     |
+|--------------|--------------|---------------|--------------|
+| React.js     | Node.js      | Gemini API    | Firebase Firestore |
+| Tailwind CSS | Express.js   | Google Cloud  | Firebase Auth |
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📦 Installation (for developers)
 
-### Making a Progressive Web App
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/your-username/edu-ai.git
+   cd edu-ai
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+2. **Install dependencies**
 
-### Advanced Configuration
+   For frontend:
+   ```bash
+   cd client
+   npm install
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+   For backend:
+   ```bash
+   cd server
+   npm install
+   ```
 
-### Deployment
+3. **Set environment variables**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+   Create `.env` files in both frontend & backend.
 
-### `npm run build` fails to minify
+   Add keys like Firebase config, Gemini API key, etc.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4. **Run the project**
+
+   ```bash
+   # In separate terminals:
+   npm run dev      # Frontend
+   npm run server   # Backend
+   ```
+
+---
+
+## 📸 Screenshots
+
+_Add screenshots or demo GIFs here (e.g., login, learner dashboard, video viewer, etc.)_
+
+---
+
+## 👩‍💻 Author
+
+Made with ❤️ by Vasanthi
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
