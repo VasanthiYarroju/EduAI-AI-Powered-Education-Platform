@@ -1,0 +1,21 @@
+{
+  "files": {
+    "main.css": "/EduAI-AI-Powered-Education-Platform/static/css/main.af385816.css",
+    "main.js": "/EduAI-AI-Powered-Education-Platform/static/js/main.7f66de00.js",
+    "static/js/239.929625d9.chunk.js": "/EduAI-AI-Powered-Education-Platform/static/js/239.929625d9.chunk.js",
+    "static/js/977.e53f5407.chunk.js": "/EduAI-AI-Powered-Education-Platform/static/js/977.e53f5407.chunk.js",
+    "static/js/455.bf2f0e3c.chunk.js": "/EduAI-AI-Powered-Education-Platform/static/js/455.bf2f0e3c.chunk.js",
+    "static/js/453.1a94c0a9.chunk.js": "/EduAI-AI-Powered-Education-Platform/static/js/453.1a94c0a9.chunk.js",
+    "index.html": "/EduAI-AI-Powered-Education-Platform/index.html",
+    "main.af385816.css.map": "/EduAI-AI-Powered-Education-Platform/static/css/main.af385816.css.map",
+    "main.7f66de00.js.map": "/EduAI-AI-Powered-Education-Platform/static/js/main.7f66de00.js.map",
+    "239.929625d9.chunk.js.map": "/EduAI-AI-Powered-Education-Platform/static/js/239.929625d9.chunk.js.map",
+    "977.e53f5407.chunk.js.map": "/EduAI-AI-Powered-Education-Platform/static/js/977.e53f5407.chunk.js.map",
+    "455.bf2f0e3c.chunk.js.map": "/EduAI-AI-Powered-Education-Platform/static/js/455.bf2f0e3c.chunk.js.map",
+    "453.1a94c0a9.chunk.js.map": "/EduAI-AI-Powered-Education-Platform/static/js/453.1a94c0a9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.af385816.css",
+    "static/js/main.7f66de00.js"
+  ]
+}
