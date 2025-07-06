@@ -1,7 +1,10 @@
-import express from 'express';
-import { db } from '../serverApp.js'; // Adjust if needed
+
+import { db } from '../config/firebase.js';
+// Adjust if needed
 import { getRecommendedVideosForLearner } from '../services/aiMatcher.js';
 import { generateTranscript } from '../services/aiTranscriptService.js';
+import express from 'express';
+
 
 const router = express.Router();
 

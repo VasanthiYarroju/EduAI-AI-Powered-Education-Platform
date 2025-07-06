@@ -6,10 +6,10 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import admin from 'firebase-admin'; // Keep this import
 import { GoogleGenerativeAI } from '@google/generative-ai'; // ADD THIS IMPORT IF NOT THERE
-import { db,  } from './config/aiAndFirestore.js';
+import { db,  } from '../server/config/aiAndFirestore.js';
 
 
-// Import your route files
+// Import your route files  
 import quizRoutes from './routes/quizRoutes.js';
 import volunteerRoutes from './routes/volunteerRoutes.js';
 import recommendationRoutes from './routes/recommendationRoutes.js';

@@ -3,7 +3,7 @@ import {
   postThread,
   replyToThread,
   generateAISummary,
-} from '../controllers/forumController.js';
+} from '../../server/controllers/forumController.js';
 
 const router = express.Router();
 
