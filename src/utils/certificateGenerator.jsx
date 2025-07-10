@@ -1,72 +1,115 @@
+// src/utils/certificateGenerator.jsx
+
 import jsPDF from 'jspdf';
-import { auth } from '../firebase'; // Assuming firebase is one level up from utils
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
+import certificateBgPath from '../assets/certificate.png';
 
 /**
- * Generates and downloads a certificate of completion for a given course.
- * @param {string} courseTitle - The title of the course for the certificate.
- * @param {string} courseId - The ID of the course (used for filename consistency).
+ * Helper function to asynchronously load an image.
+ */
+const loadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = (err) => reject(err);
+    img.src = src;
+  });
+};
+
+/**
+ * Generates and downloads a PDF certificate for the given course.
  */
 export const generateCertificate = async (courseTitle, courseId) => {
-  const user = auth.currentUser;
+  let user = auth.currentUser;
+
+  if (!user) {
+    await new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, (u) => {
+        if (u) {
+          user = u;
+          resolve();
+          unsubscribe();
+        }
+      });
+    });
+  }
+
   if (!user) {
     alert("Login required to download certificate.");
     return;
   }
+
   if (!courseTitle) {
-    alert("Course title is missing. Cannot generate certificate.");
+    alert("Course title is missing.");
     return;
   }
 
   try {
-    const docPDF = new jsPDF();
+    const bgImage = await loadImage(certificateBgPath);
 
-    // Set font and size for the title
-    docPDF.setFont("helvetica", "bold");
-    docPDF.setFontSize(30);
-    docPDF.setTextColor(40, 40, 40); // Dark gray
-    docPDF.text("Certificate of Completion", docPDF.internal.pageSize.width / 2, 40, { align: 'center' });
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'px',
+      format: 'a4',
+    });
 
-    // Set font and size for body text
-    docPDF.setFont("helvetica", "normal");
-    docPDF.setFontSize(18);
-    docPDF.setTextColor(80, 80, 80); // Medium gray
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
 
-    // User's name
-    docPDF.text("This certifies that", docPDF.internal.pageSize.width / 2, 80, { align: 'center' });
-    docPDF.setFont("helvetica", "bold");
-    docPDF.setFontSize(24);
-    docPDF.setTextColor(0, 128, 0); // Green color for name
-    docPDF.text(user.displayName || "A Valued Learner", docPDF.internal.pageSize.width / 2, 95, { align: 'center' });
+    doc.addImage(bgImage, 'PNG', 0, 0, pageWidth, pageHeight);
 
-    // Course completion text
-    docPDF.setFont("helvetica", "normal");
-    docPDF.setFontSize(18);
-    docPDF.setTextColor(80, 80, 80);
-    docPDF.text("has successfully completed the course", docPDF.internal.pageSize.width / 2, 115, { align: 'center' });
+    // --- FINAL ALIGNMENT ---
+    // We'll use a slightly adjusted center and much more deliberate vertical spacing.
+    const contentCenterX = pageWidth * 0.64;
 
-    // Course title
-    docPDF.setFont("helvetica", "bold");
-    docPDF.setFontSize(26);
-    docPDF.setTextColor(50, 50, 150); // Blue color for course title
-    docPDF.text(courseTitle, docPDF.internal.pageSize.width / 2, 130, { align: 'center' });
+    // --- Add Text Elements with Polished Alignment & Spacing ---
 
-    // Date
-    docPDF.setFont("helvetica", "normal");
-    docPDF.setFontSize(14);
-    docPDF.setTextColor(120, 120, 120); // Lighter gray for date
-    docPDF.text(`Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, docPDF.internal.pageSize.width / 2, 160, { align: 'center' });
+    // 1. ADD A MAIN TITLE (This makes a huge difference)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(18);
+    doc.setTextColor(80, 80, 80);
+    doc.text("CERTIFICATE OF COMPLETION", contentCenterX, 190, { align: 'center' });
 
-    // Signature line (optional, for aesthetics)
-    docPDF.line(60, 200, 150, 200); // Draw a line
-    docPDF.text("Signature of Authority", 105, 205, { align: 'center' });
+    // 2. LEARNER'S NAME (with adjusted vertical position)
+    const name = user.displayName || user.email?.split('@')[0] || "A Valued Learner";
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(32);
+    doc.setTextColor(30, 30, 30);
+    doc.text(name, contentCenterX, 240, { align: 'center' });
+
+    // 3. COMPLETION MESSAGE (tighter spacing)
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(18);
+    doc.setTextColor(50, 50, 50);
+    doc.text("has successfully completed the course", contentCenterX, 270, { align: 'center' });
+
+    // 4. COURSE TITLE (the main focus)
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(26);
+    doc.setTextColor(44, 44, 150);
+    const courseTextOptions = {
+        align: 'center',
+        maxWidth: 400 // Handles long titles gracefully
+    };
+    doc.text(courseTitle, contentCenterX, 315, courseTextOptions);
+
+    // 5. COMPLETION DATE
+    const dateStr = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric',
+    });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(14);
+    doc.setTextColor(100);
+    doc.text(`Date: ${dateStr}`, contentCenterX, 360, { align: 'center' });
 
     // Save the PDF
-    const filename = `${courseTitle.replace(/[^a-zA-Z0-9]/g, '_')}_Certificate.pdf`; // Sanitize filename
-    docPDF.save(filename);
-    alert("Certificate downloaded!");
+    const filename = `${courseTitle.replace(/[^a-zA-Z0-9]/g, '_')}_Certificate.pdf`;
+    doc.save(filename);
 
   } catch (error) {
-    console.error("Error generating certificate:", error);
-    alert("Failed to generate certificate. Please try again.");
+    console.error("Certificate generation error:", error);
+    alert("Failed to generate certificate. Please check the console for details.");
   }
 };

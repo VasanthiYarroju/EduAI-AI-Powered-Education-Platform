@@ -125,8 +125,11 @@ useEffect(() => {
 
   // Effect to fetch questions once the component mounts
   useEffect(() => {
+  if (userSetupData) {
     generateAssessment();
-  }, [generateAssessment]);
+  }
+}, [userSetupData, generateAssessment]);
+
 
 
   // Effect for the timer (no changes needed)
