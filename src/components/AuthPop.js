@@ -28,7 +28,7 @@ const [otherEducation, setOtherEducation] = useState('');
 // Your errors state should be able to hold keys for the new fields:
 // const [errors, setErrors] = useState({});
 // Example: errors might look like { fullName: '', email: '', education: '', otherEducation: '' ... }
-  const [showLearningSetup, setShowLearningSetup] = useState(false);
+ 
 
   // Mock database of registered users
   const registeredUsers = ['john@example.com', 'jane@example.com', 'test@example.com'];
