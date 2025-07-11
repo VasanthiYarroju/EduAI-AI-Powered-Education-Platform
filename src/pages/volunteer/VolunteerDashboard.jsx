@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import { db,auth } from '../../firebase';
 import { limit, getDoc } from 'firebase/firestore'; // Import getDoc to read user document
-import { NavLink } from 'react-router-dom'; 
+
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend,
 } from 'recharts';
@@ -125,109 +125,102 @@ const VolunteerDashboard = ({ user, onVideoPostedSuccess }) => {
 
 
 
-    // Function to fetch videos for the current volunteer from Firestore
-    const fetchVolunteerVideos = async () => {
-        if (!user?.uid) {
-            setLoadingVideos(false);
-            console.warn("User UID is not available to fetch videos. Skipping fetch.");
-            return;
+    const fetchVolunteerVideos = useCallback(async () => {
+  if (!user?.uid) {
+    setLoadingVideos(false);
+    console.warn("User UID is not available to fetch videos. Skipping fetch.");
+    return;
+  }
+
+  setLoadingVideos(true);
+  try {
+    const videosRef = collection(db, "videos");
+    const q = query(videosRef, where("userId", "==", user.uid), orderBy("uploadedAt", "desc"), limit(2));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      setVolunteerVideos([]);
+    } else {
+      const fetchedVideos = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setVolunteerVideos(fetchedVideos);
+    }
+  } catch (error) {
+    console.error("Error fetching volunteer videos:", error);
+  } finally {
+    setLoadingVideos(false);
+  }
+}, [user?.uid]);
+
+// ✅ 2. fetchLearnerFeedback wrapped with useCallback
+const fetchLearnerFeedback = useCallback(async () => {
+  if (!user?.uid) {
+    setLoadingFeedback(false);
+    return;
+  }
+
+  setLoadingFeedback(true);
+  try {
+    const feedbackRef = collection(db, "volunteer_feedback");
+    const q = query(feedbackRef, where("volunteerId", "==", user.uid), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    let fetchedAllFeedback = [];
+    let positiveCount = 0;
+    let negativeCount = 0;
+
+    if (!querySnapshot.empty) {
+      fetchedAllFeedback = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate()
+      }));
+
+      fetchedAllFeedback.forEach(item => {
+        const feedbackText = item.feedback ? item.feedback.toLowerCase() : '';
+        if (feedbackText.includes("good") || feedbackText.includes("great") || feedbackText.includes("excellent") || feedbackText.includes("helpful") || feedbackText.includes("awesome") || feedbackText.includes("love")) {
+          positiveCount++;
+        } else if (feedbackText.includes("bad") || feedbackText.includes("poor") || feedbackText.includes("not good") || feedbackText.includes("needs improvement") || feedbackText.includes("confusing")) {
+          negativeCount++;
         }
+      });
+    }
 
-        setLoadingVideos(true);
-        try {
-            const videosRef = collection(db, "videos");
-            const q = query(videosRef, where("userId", "==", user.uid), orderBy("uploadedAt", "desc"),limit(2));
-            const querySnapshot = await getDocs(q);
+    setLearnerFeedback(fetchedAllFeedback.slice(0, 2));
+    setTotalFeedbackCount(fetchedAllFeedback.length);
+    setPositiveFeedbackCount(positiveCount);
+    setNegativeFeedbackCount(negativeCount);
 
-            if (querySnapshot.empty) {
-                setVolunteerVideos([]); 
-            } else {
-                const fetchedVideos = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                setVolunteerVideos(fetchedVideos);
-            }
-        } catch (error) {
-            console.error("Error fetching volunteer videos:", error);
-        } finally {
-            setLoadingVideos(false);
-        }
-    };
+    await checkAndAwardBadges(user?.uid, user.stats, fetchedAllFeedback.length);
+  } catch (error) {
+    console.error("Error fetching learner feedback:", error);
+  } finally {
+    setLoadingFeedback(false);
+  }
+}, [user?.uid, user?.stats]);
 
-    // Function to fetch feedback for the current volunteer from Firestore and categorize it
-    const fetchLearnerFeedback = async () => {
-        if (!user?.uid) {
-            setLoadingFeedback(false);
-            return;
-        }
+// ✅ 3. fetchEarnedBadges wrapped with useCallback
+const fetchEarnedBadges = useCallback(async () => {
+  if (!user?.uid) return;
 
-        setLoadingFeedback(true);
-        try {
-            const feedbackRef = collection(db, "volunteer_feedback"); 
-            // Fetch all feedback for the volunteer to count total, positive, negative
-            const q = query(feedbackRef, where("volunteerId", "==", user.uid), orderBy("createdAt", "desc")); 
-            const querySnapshot = await getDocs(q);
+  try {
+    const userDocRef = doc(db, "users", user.uid);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      const badges = userData.earnedBadges || {};
 
-            let fetchedAllFeedback = [];
-            let positiveCount = 0;
-            let negativeCount = 0;
-
-            if (!querySnapshot.empty) {
-                fetchedAllFeedback = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    createdAt: doc.data().createdAt?.toDate() 
-                }));
-
-                fetchedAllFeedback.forEach(item => {
-                    const feedbackText = item.feedback ? item.feedback.toLowerCase() : '';
-                    // Simple keyword-based sentiment analysis for demonstration
-                    if (feedbackText.includes("good") || feedbackText.includes("great") || feedbackText.includes("excellent") || feedbackText.includes("helpful") || feedbackText.includes("awesome") || feedbackText.includes("love")) {
-                        positiveCount++;
-                    } else if (feedbackText.includes("bad") || feedbackText.includes("poor") || feedbackText.includes("not good") || feedbackText.includes("needs improvement") || feedbackText.includes("confusing")) {
-                        negativeCount++;
-                    }
-                });
-            }
-
-            setLearnerFeedback(fetchedAllFeedback.slice(0, 2)); // Still display only latest 2 for the list
-            setTotalFeedbackCount(fetchedAllFeedback.length);
-            setPositiveFeedbackCount(positiveCount);
-            setNegativeFeedbackCount(negativeCount);
-
-            // After fetching feedback and counts, potentially check for feedback-related badges
-            await checkAndAwardBadges(user?.uid, user.stats, fetchedAllFeedback.length);
-
-        } catch (error) {
-            console.error("Error fetching learner feedback:", error);
-        } finally {
-            setLoadingFeedback(false);
-        }
-    };
-
-    // Function to fetch earned badges for the current volunteer
-    const fetchEarnedBadges = async () => {
-        if (!user?.uid) {
-            return;
-        }
-        try {
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            if (userDocSnap.exists()) {
-                const userData = userDocSnap.data();
-                const badges = userData.earnedBadges || {}; 
-
-                const displayableBadges = Object.keys(badges).filter(badgeId => {
-                    // Only display badges that exist in our definitions and were marked as earned
-                    return badgeDefinitions[badgeId] && (badges[badgeId] === true || (typeof badges[badgeId] === 'object' && badges[badgeId].earnedAt));
-                });
-                setEarnedBadgesDisplay(displayableBadges);
-            }
-        } catch (error) {
-            console.error("Error fetching earned badges:", error);
-        }
-    };
+      const displayableBadges = Object.keys(badges).filter(badgeId => {
+        return badgeDefinitions[badgeId] && (badges[badgeId] === true || (typeof badges[badgeId] === 'object' && badges[badgeId].earnedAt));
+      });
+      setEarnedBadgesDisplay(displayableBadges);
+    }
+  } catch (error) {
+    console.error("Error fetching earned badges:", error);
+  }
+}, [user?.uid]);
 
 
     // Check and award badges based on current user stats and potentially feedback count
@@ -276,11 +269,12 @@ const VolunteerDashboard = ({ user, onVideoPostedSuccess }) => {
 
 
     // useEffect hook to trigger fetching when component mounts or relevant states change
-    useEffect(() => {
-        fetchVolunteerVideos();
-        fetchLearnerFeedback(); 
-        fetchEarnedBadges(); 
-    }, [user?.uid, refreshContentTrigger]); 
+  useEffect(() => {
+  fetchVolunteerVideos();
+  fetchLearnerFeedback();
+  fetchEarnedBadges();
+}, [user?.uid, refreshContentTrigger, fetchVolunteerVideos, fetchLearnerFeedback, fetchEarnedBadges]);
+
 
     // Handler for posting a new video
     const handlePostVideo = async () => {

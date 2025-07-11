@@ -1,7 +1,7 @@
 // src/pages/volunteer/VolunteerPostContent.jsx
 // Note: This file name is retained as per user's prompt, but its function is now 'manage content'.
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect ,useCallback} from 'react';
 import { db } from '../../firebase';
 import { collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, increment, setDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom'; // Still needed for the "Go to your Dashboard" link
@@ -42,45 +42,47 @@ const VolunteerPostContent = ({ user }) => {
   // No longer need cloudinaryCloudName here as it's not used in this display component
   // const cloudinaryCloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
 
-  const fetchVideos = async () => {
-    if (!user?.uid) {
-      setLoadingVideos(false);
-      console.warn("User UID is not available. Cannot fetch videos for Post Content.");
-      return;
-    }
+  const fetchVideos = useCallback(async () => {
+  if (!user?.uid) {
+    setLoadingVideos(false);
+    console.warn("User UID is not available. Cannot fetch videos for Post Content.");
+    return;
+  }
 
-    setLoadingVideos(true);
-    try {
-      const videosRef = collection(db, "videos");
-      const q = query(videosRef,
-                      where("userId", "==", user.uid),
-                      orderBy("uploadedAt", "desc"),
-                    );
-      const querySnapshot = await getDocs(q);
+  setLoadingVideos(true);
+  try {
+    const videosRef = collection(db, "videos");
+    const q = query(
+      videosRef,
+      where("userId", "==", user.uid),
+      orderBy("uploadedAt", "desc")
+    );
 
-      const fetchedVideos = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        notes: doc.data().notes || '',
-        tags: doc.data().tags || [],
-      }));
-      setVolunteerVideos(fetchedVideos);
-      console.log("Videos fetched for Post Content:", fetchedVideos);
-    } catch (error) {
-      console.error("Error fetching videos for Post Content:", error);
-      alert("Failed to load your videos on this page. Check console for details.");
-    } finally {
-      setLoadingVideos(false);
-    }
-  };
+    const querySnapshot = await getDocs(q);
 
-  useEffect(() => {
-    // Fetch videos only if the 'videos' tab is active
-    if (activeTab === 'videos' && user?.uid) {
-      fetchVideos();
-    }
-    // No need to fetch when switching to 'courses' tab, VolunteerCourseManager handles its own data fetching
-  }, [user?.uid, activeTab]); // Dependency array includes activeTab
+    const fetchedVideos = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+      notes: doc.data().notes || '',
+      tags: doc.data().tags || [],
+    }));
+
+    setVolunteerVideos(fetchedVideos);
+    console.log("Videos fetched for Post Content:", fetchedVideos);
+  } catch (error) {
+    console.error("Error fetching videos for Post Content:", error);
+    alert("Failed to load your videos on this page. Check console for details.");
+  } finally {
+    setLoadingVideos(false);
+  }
+}, [user?.uid, setVolunteerVideos]); // ✅ Include all required dependencies
+
+useEffect(() => {
+  if (activeTab === 'videos' && user?.uid) {
+    fetchVideos(); // ✅ No warning now
+  }
+}, [user?.uid, activeTab, fetchVideos]);// ✅ added fetchVideos
+ // Dependency array includes activeTab
 
   const handleEditClick = (video) => {
     setEditingVideo(video);
