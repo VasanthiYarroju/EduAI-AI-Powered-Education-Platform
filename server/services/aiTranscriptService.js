@@ -7,7 +7,7 @@
 //    e.g., your-project/server.js and your-project/services/aiTranscriptService.js
 import { db, model } from '../../server/serverApp.js';
 
-import { getFirestore } from 'firebase-admin/firestore';
+
 
 
 

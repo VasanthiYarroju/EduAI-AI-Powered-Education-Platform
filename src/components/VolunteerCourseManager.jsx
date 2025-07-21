@@ -1,7 +1,7 @@
 // src/components/VolunteerCourseManager.jsx
 
-import React, { useState, useEffect } from 'react';
-import { db,auth } from '../firebase'; // Adjust path if necessary
+import React, { useState, useEffect,useCallback } from 'react';
+import { db } from '../firebase'; // Adjust path if necessary
 import { collection, getDocs, query, where, addDoc, doc, updateDoc, deleteDoc, orderBy } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid'; // For unique IDs, ensure 'uuid' is installed (npm install uuid)
 
@@ -44,54 +44,63 @@ const VolunteerCourseManager = ({ user, Icon }) => {
 
 
   // Load courses for current volunteer
-  const fetchCourses = async () => {
-    if (!user?.uid) {
-      setLoadingCourses(false);
-      return;
-    }
-    setLoadingCourses(true);
-    try {
-      const q = query(collection(db, 'courses'), where('volunteerId', '==', user.uid), orderBy('createdAt', 'desc'));
-      const snapshot = await getDocs(q);
-      const fetchedCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCourses(fetchedCourses);
-      console.log("Courses fetched:", fetchedCourses);
-    } catch (error) {
-      console.error("Error fetching courses:", error);
-      alert("Failed to load your courses. Check console for details.");
-    } finally {
-      setLoadingCourses(false);
-    }
-  };
+ const fetchCourses = useCallback(async () => {
+  if (!user?.uid) {
+    setLoadingCourses(false);
+    return;
+  }
 
-  // Load public videos for current volunteer (to be selected as lessons)
-  const fetchAvailableVideos = async () => {
-    if (!user?.uid) {
-      setLoadingAvailableVideos(false);
-      setErrorAvailableVideos("User not logged in. Cannot fetch videos for course creation.");
-      return;
-    }
-    setLoadingAvailableVideos(true);
-    setErrorAvailableVideos(null);
-    try {
-      // Fetch only published videos by the current volunteer from 'videos' collection (assuming private list)
-      // If you meant public_videos for selection, change 'videos' to 'public_videos'
-      const q = query(collection(db, 'videos'), where('userId', '==', user.uid), orderBy('uploadedAt', 'desc'));
-      const snapshot = await getDocs(q);
-      const videos = snapshot.docs.map(doc => ({ id: doc.id, title: doc.data().title }));
-      setAvailableVideos(videos);
-    } catch (error) {
-      console.error("Error fetching available videos:", error);
-      setErrorAvailableVideos("Failed to load your videos for selection.");
-    } finally {
-      setLoadingAvailableVideos(false);
-    }
-  };
+  setLoadingCourses(true);
+  try {
+    const q = query(
+      collection(db, 'courses'),
+      where('volunteerId', '==', user.uid),
+      orderBy('createdAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    const fetchedCourses = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    setCourses(fetchedCourses);
+    console.log("Courses fetched:", fetchedCourses);
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+    alert("Failed to load your courses. Check console for details.");
+  } finally {
+    setLoadingCourses(false);
+  }
+}, [user?.uid]);
+
+// ✅ 2. fetchAvailableVideos with useCallback
+const fetchAvailableVideos = useCallback(async () => {
+  if (!user?.uid) {
+    setLoadingAvailableVideos(false);
+    setErrorAvailableVideos("User not logged in. Cannot fetch videos for course creation.");
+    return;
+  }
+
+  setLoadingAvailableVideos(true);
+  setErrorAvailableVideos(null);
+  try {
+    const q = query(
+      collection(db, 'videos'),
+      where('userId', '==', user.uid),
+      orderBy('uploadedAt', 'desc')
+    );
+    const snapshot = await getDocs(q);
+    const videos = snapshot.docs.map(doc => ({ id: doc.id, title: doc.data().title }));
+    setAvailableVideos(videos);
+  } catch (error) {
+    console.error("Error fetching available videos:", error);
+    setErrorAvailableVideos("Failed to load your videos for selection.");
+  } finally {
+    setLoadingAvailableVideos(false);
+  }
+}, [user?.uid]);
 
   useEffect(() => {
-    fetchCourses();
-    fetchAvailableVideos();
-  }, [user?.uid]); // Re-run when user changes
+  fetchCourses();
+  fetchAvailableVideos();
+}, [user?.uid, fetchCourses, fetchAvailableVideos]);
+ // Re-run when user changes
 
   const handleCourseFormChange = (e) => {
     const { name, value } = e.target;

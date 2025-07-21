@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 // Home.jsx
 
 import React, { useState, useEffect } from 'react';
@@ -9,18 +10,18 @@ import AuthPop from '../components/AuthPop';
 import LearningSetupPopup from './LearningSetupPopup';
 import {
   ChevronUp, Brain, Users, Wifi, Trophy, Play, ArrowRight, Menu, X, Sun, Moon,
-  Facebook, Twitter, Linkedin, Mail, MapPin
+  Facebook, Twitter, Linkedin, Mail
 } from 'lucide-react';
 import '../App.css';
 
-// REMOVE refreshUserData from props
+
 const Home = ({ user, userRole, hasIncompleteSetup: appHasIncompleteSetup, setHasIncompleteSetup /*, refreshUserData */ }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [showLearningSetup, setShowLearningSetup] = useState(false);
-  // const [navigatingAfterSetup, setNavigatingAfterSetup] = useState(false); // This flag is no longer strictly necessary with onSnapshot
+  
 
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ const Home = ({ user, userRole, hasIncompleteSetup: appHasIncompleteSetup, setHa
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Main useEffect for popup visibility only. NO direct navigation here.
+
   useEffect(() => {
     if (user) {
       console.log(`Home Effect: userUID=${user?.uid}, role=${userRole}, appHasIncompleteSetup=${appHasIncompleteSetup}, showLearningSetup=${showLearningSetup}`);
@@ -63,11 +64,9 @@ const Home = ({ user, userRole, hasIncompleteSetup: appHasIncompleteSetup, setHa
     } else if (!user && showLearningSetup) {
       setShowLearningSetup(false);
     }
-  }, [user, userRole, appHasIncompleteSetup, showAuthPopup, showLearningSetup]); // Removed navigatingAfterSetup, added showAuthPopup
+  }, [user, userRole, appHasIncompleteSetup, showAuthPopup, showLearningSetup]); 
 
-  // Remove this useEffect if you removed navigatingAfterSetup state.
-  // useEffect(() => { /* ... */ }, [navigatingAfterSetup]);
-
+ 
 
   const handleAuthSuccess = async (firebaseUser) => {
     console.log('Home: Auth success reported from AuthPop for user:', firebaseUser.uid);
@@ -76,7 +75,7 @@ const Home = ({ user, userRole, hasIncompleteSetup: appHasIncompleteSetup, setHa
     // This block is for debug logging only. Navigation is handled by App.js.
     try {
       const userDocRef = doc(db, 'users', firebaseUser.uid);
-      const userSnap = await getDoc(userDocRef); // Still useful for immediate debug log here
+      const userSnap = await getDoc(userDocRef); 
       if (userSnap.exists()) {
         console.log('Home: User data immediately after auth success (for debug):', userSnap.data());
       } else {

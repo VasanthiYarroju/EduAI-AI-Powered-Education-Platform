@@ -1,7 +1,7 @@
 // MockAssessment.js
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { saveAssessmentResults } from "../services/firestoreService";
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase';
@@ -43,8 +43,6 @@ const MockAssessment = () => {
   // The 'loading' state is handled by the PrivateRoute in App.js.
   const [user] = useAuthState(auth);
   const navigate = useNavigate();
-  const location = useLocation();
-  
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -121,6 +119,7 @@ useEffect(() => {
     } finally {
       setIsLoadingQuestions(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, userSetupData]); // Dependencies for useCallback
 
   // Effect to fetch questions once the component mounts

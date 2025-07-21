@@ -4,7 +4,7 @@ import {
   addDoc,
   doc,
   getDoc,
-  getDocs,
+ 
   updateDoc,
   serverTimestamp,
   arrayUnion,
@@ -149,6 +149,8 @@ const ForumPage = () => {
             method: 'POST',
           });
           const data = await res.json();
+          console.log('Summary response:', data);
+          
           alert('AI Summary updated! Refresh to see it.');
         } catch (err) {
           console.error(err);

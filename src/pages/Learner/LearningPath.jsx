@@ -26,6 +26,7 @@ const LearningPath = () => {
       default: return '🕒';
     }
   };
+  console.log("Learner data:", learnerData);
 
   useEffect(() => {
     const fetchLearningPath = async (user) => {

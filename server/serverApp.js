@@ -18,6 +18,7 @@ import forumRoutes from './routes/forumRoutes.js';
 
 
 dotenv.config(); // Load environment variables from .env
+console.log('Path to credentials from .env:', process.env.GOOGLE_APPLICATION_CREDENTIALS);
 
 // --- 1. Firebase Admin SDK Initialization ---
 if (admin.apps.length === 0) {

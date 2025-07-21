@@ -6,7 +6,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../firebase'; // Make sure this path is correct
 
 const ProtectedRoute = () => {
-    const [user, loading, error] = useAuthState(auth);
+    const [user, loading] = useAuthState(auth);
 
     // 1. Show a loading screen while Firebase is checking the user's status.
     //    This is the key to preventing the race condition.
