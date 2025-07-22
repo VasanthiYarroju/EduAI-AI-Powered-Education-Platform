@@ -2,22 +2,21 @@
 
 import admin from "firebase-admin";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { readFileSync } from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+
 
 // Setup Firebase Admin
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-const serviceAccountPath = path.join(__dirname, "../config/firebase-service-account.json");
+
+
+
 
 if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, "utf8"));
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 }
+
 
 const db = getFirestore();
 
