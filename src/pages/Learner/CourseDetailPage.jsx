@@ -235,38 +235,41 @@ const CourseDetailPage = () => {
   }, [id]);
 
   // Effect to save watched videos to Firebase whenever watchedVideos state changes
-  useEffect(() => {
-    const saveProgress = async () => {
-      const user = auth.currentUser;
-      // Only save if user is logged in, course data is loaded, and there are watched videos or completion status might change
-      if (user && course && totalVideosInCourse >= 0) { // totalVideosInCourse can be 0 for empty courses
-        const userProgressRef = doc(db, 'users', user.uid, 'courseProgress', id);
-        const currentCompletionStatus = isCourseFullyWatched(); // Get current completion status
-        try {
-          await setDoc(userProgressRef, {
-            courseId: id,
-            courseTitle: course.title, // Add course title for easier identification in Firestore
-            watchedVideoIds: Array.from(watchedVideos), // Convert Set to Array for Firestore
-            isCompleted: currentCompletionStatus, // Save whether it's fully watched
-            lastAccessed: new Date(),
-          }, { merge: true }); // Use merge to avoid overwriting other fields if they exist
-          console.log(`Progress saved to Firestore. Watched: ${watchedVideos.size}, Completed: ${currentCompletionStatus}`);
-        } catch (error) {
-          console.error("Error saving user progress to Firestore:", error);
-        }
-      }
+ useEffect(() => {
+  const saveProgress = async () => {
+    const user = auth.currentUser;
+
+    const isCourseFullyWatched = () => {
+      return totalVideosInCourse > 0 && watchedVideos.size === totalVideosInCourse;
     };
 
-    // Delay saving slightly to batch updates if many videos end quickly, and prevent saving on initial load if no user.
-    // Also, ensure `watchedVideos` has been initialized (i.e. not null) before trying to save.
-    const saveTimeout = setTimeout(() => {
-      if (watchedVideos) { // Ensure watchedVideos state is initialized
-        saveProgress();
+    if (user && course && totalVideosInCourse >= 0) {
+      const userProgressRef = doc(db, 'users', user.uid, 'courseProgress', id);
+      const currentCompletionStatus = isCourseFullyWatched();
+      try {
+        await setDoc(userProgressRef, {
+          courseId: id,
+          courseTitle: course.title,
+          watchedVideoIds: Array.from(watchedVideos),
+          isCompleted: currentCompletionStatus,
+          lastAccessed: new Date(),
+        }, { merge: true });
+        console.log(`Progress saved to Firestore. Watched: ${watchedVideos.size}, Completed: ${currentCompletionStatus}`);
+      } catch (error) {
+        console.error("Error saving user progress to Firestore:", error);
       }
-    }, 1000); // Save 1 second after last change
+    }
+  };
 
-    return () => clearTimeout(saveTimeout); // Cleanup timeout on unmount or re-render
-  }, [watchedVideos, course, totalVideosInCourse, id]); // Re-run when these dependencies change
+  const saveTimeout = setTimeout(() => {
+    if (watchedVideos) {
+      saveProgress();
+    }
+  }, 1000);
+
+  return () => clearTimeout(saveTimeout);
+}, [watchedVideos, course, totalVideosInCourse, id]);
+ // Re-run when these dependencies change
 
 
   // Effect to fetch full video details and transcript when selectedVideoInfo changes

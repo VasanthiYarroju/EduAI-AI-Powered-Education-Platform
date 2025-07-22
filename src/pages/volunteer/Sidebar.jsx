@@ -96,10 +96,15 @@ const Sidebar = ({ user, onLogout }) => {
                     <h4 style={{margin: '0 0 5px 0', color: '#fff'}}>Community Connect</h4>
                     <p style={{fontSize: '0.8rem', color: '#9ca3af', margin: 0}}>Join the discussion.</p>
                 </div>
-                <a href="#" onClick={onLogout} style={{...styles.menuItem, marginTop: 'auto'}} className="sidebar-logout">
-                    <Icon name="logout" style={styles.menuIcon} />
-                    <span>Logout</span>
-                </a>
+                <button
+  onClick={onLogout}
+  style={{ ...styles.menuItem, marginTop: 'auto', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+  className="sidebar-logout"
+>
+  <Icon name="logout" style={styles.menuIcon} />
+  <span>Logout</span>
+</button>
+
             </aside>
         </>
     );

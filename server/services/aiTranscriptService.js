@@ -5,7 +5,7 @@
 //    If your server.js is in the root of your project, and this file is in 'services/',
 //    then the path would likely be '../../server.js'.
 //    e.g., your-project/server.js and your-project/services/aiTranscriptService.js
-import { db, model } from '../../server/serverApp.js';
+import { db, model } from '../config/aiAndFirestore.js';
 
 
 

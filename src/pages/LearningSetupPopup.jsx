@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronRight, Book, Globe, Clock, Target, ChevronLeft, GraduationCap } from 'lucide-react';
+import { X, ChevronRight, Book, Globe, Clock, ChevronLeft, GraduationCap } from 'lucide-react';
 
 const LearningSetupPopup = ({ isOpen, onClose, onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
