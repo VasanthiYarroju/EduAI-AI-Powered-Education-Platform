@@ -6,6 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import LearnerSidebar from '../components/learner/LearnerSidebar';
 import { Bell, Sun, Moon } from 'lucide-react';
 
+
 //------------------------------------------------------------------
 // THEME STYLES COMPONENT
 //------------------------------------------------------------------
