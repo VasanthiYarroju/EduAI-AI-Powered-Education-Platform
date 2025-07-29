@@ -122,7 +122,7 @@ The following approach outlines how Edu-AI leverages AI and modern technology to
 
 ## 👩‍💻 Author
 
-Made with ❤️ by Vasanthi
+Made with ❤️ by EduAI team.
 
 ---
 
