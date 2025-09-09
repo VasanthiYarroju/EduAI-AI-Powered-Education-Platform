@@ -2,7 +2,7 @@
 
 import admin from "firebase-admin";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { initializeFirebase } from "../config/firebaseConfig.js";
+import initializeFirebase from "../config/firebaseConfig.js";
 
 initializeFirebase();
 
