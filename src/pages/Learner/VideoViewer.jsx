@@ -42,7 +42,7 @@ const VideoViewer = () => {
     const fetchTranscript = async () => {
       try {
         setTranscriptLoading(true);
-        const response = await fetch(`/api/ai/transcript/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/ai/transcript/${id}`);
         const data = await response.json();
 
         if (response.ok && data.transcript) {

@@ -319,7 +319,7 @@ const CourseDetailPage = () => {
 
       // Fetch transcript from backend API
       try {
-        const response = await fetch(`/api/ai/transcript/${selectedVideoInfo.videoId}`);
+        const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/ai/transcript/${selectedVideoInfo.videoId}`);
         const data = await response.json();
 
         if (response.ok && data.transcript) {

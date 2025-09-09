@@ -145,7 +145,7 @@ const ForumPage = () => {
       className="summarize-btn"
       onClick={async () => {
         try {
-          const res = await fetch(`/api/forum/ai-summary/${selectedThread.id}`, {
+          const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/forum/ai-summary/${selectedThread.id}`, {
             method: 'POST',
           });
           const data = await res.json();

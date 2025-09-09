@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { useOutletContext } from 'react-router-dom';
 import Card from '../../components/common/Card'; // Make sure this path is correct
 import { Link } from 'react-router-dom';
-import './LearningPath.css'; // Import the CSS file that defines .video-grid and .video-card
-
+import './LearningPath.css';
 const RecommendedVideos = ({ additionalCourses = [] }) => {
   const outletContext = useOutletContext() || {};
 const learnerData = outletContext.learnerData || null;
@@ -28,7 +27,7 @@ const learnerData = outletContext.learnerData || null;
           return;
         }
 
-        const response = await axios.post('/api/ai/match-videos', {
+        const response = await api.post('/api/ai/match-videos', {
           learnerId: learnerData.uid,
         });
 

@@ -9,7 +9,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
  // Import doc and getDoc
 import { db } from '../firebase'; // Import db
 import { Clock, Brain, AlertCircle, Award } from 'lucide-react';
-import axios from "axios";
+import axios from "../services/api";
 
 // --- START: CSS-in-JS (No changes here, it's perfect) ---
 const styles = `
@@ -99,7 +99,7 @@ useEffect(() => {
     setError(null);
     try {
       if (userSetupData?.subjects?.length) {
-        const response = await axios.post("http://localhost:5000/api/quiz/generate-quiz", {
+        const response = await axios.post("/api/quiz/generate-quiz", {
           educationLevel: userSetupData.educationLevel,
           subjects: userSetupData.subjects,
           language: userSetupData.preferredLanguage || 'English',
