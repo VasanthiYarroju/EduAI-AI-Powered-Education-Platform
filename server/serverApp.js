@@ -35,6 +35,42 @@ app.use("/api/quiz", quizRoutes);
 app.use("/api/volunteers", volunteerRoutes);
 app.use('/api/forum', forumRoutes);
 
+// Firebase test endpoint for deployment debugging
+app.get('/api/test-firebase', async (req, res) => {
+  try {
+    // Import here to avoid issues if Firebase isn't initialized
+    const admin = (await import('firebase-admin')).default;
+    const db = admin.firestore();
+    
+    // Test write and read
+    const testRef = db.collection('_test').doc('deployment-test');
+    await testRef.set({
+      timestamp: admin.firestore.Timestamp.now(),
+      test: 'Deployment Firebase test',
+      environment: process.env.NODE_ENV || 'production'
+    });
+    
+    const doc = await testRef.get();
+    await testRef.delete(); // Clean up
+    
+    res.json({ 
+      status: 'success', 
+      firebase: 'connected',
+      data: doc.data(),
+      environment: process.env.NODE_ENV || 'production',
+      projectId: process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT
+    });
+  } catch (error) {
+    console.error('Firebase test error:', error);
+    res.status(500).json({ 
+      status: 'error', 
+      error: error.message,
+      code: error.code || 'unknown',
+      environment: process.env.NODE_ENV || 'production'
+    });
+  }
+});
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);

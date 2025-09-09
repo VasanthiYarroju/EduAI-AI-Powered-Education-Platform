@@ -2,20 +2,10 @@
 
 import admin from "firebase-admin";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import initializeFirebase from "../config/firebaseConfig.js";
 
-
-// Setup Firebase Admin
-
-
-
-
-
-if (!admin.apps.length) {
-  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+// Initialize Firebase Admin with robust error handling
+initializeFirebase();
 
 
 const db = getFirestore();
