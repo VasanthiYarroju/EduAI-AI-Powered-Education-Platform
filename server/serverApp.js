@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://edu-ai-frontend.vercel.app',
+    'https://eduai-portal.vercel.app',
     process.env.FRONTEND_ORIGIN
   ].filter(Boolean),
   credentials: true,
