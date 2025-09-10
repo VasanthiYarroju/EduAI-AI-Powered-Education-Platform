@@ -11,50 +11,93 @@ const learnerData = outletContext.learnerData || null;
   const [recommendedVideos, setRecommendedVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [retrying, setRetrying] = useState(false);
+
+  const fetchRecommendations = async (retryCount = 0) => {
+    if (retryCount === 0) {
+      setLoading(true);
+    } else {
+      setRetrying(true);
+    }
+    setError(null);
+
+    try {
+      console.log("Calling AI API with learnerId:", learnerData?.uid);
+
+      if (!learnerData?.uid) {
+        setRecommendedVideos([]);
+        setLoading(false);
+        setRetrying(false);
+        return;
+      }
+
+      const response = await api.post('/api/ai/match-videos', {
+        learnerId: learnerData.uid,
+      });
+
+      setRecommendedVideos(response.data.recommendedVideos || []);
+    } catch (error) {
+      console.error('Error fetching recommended videos:', error);
+      
+      // Handle timeout errors with retry logic
+      if (error.code === 'ECONNABORTED' && retryCount < 2) {
+        console.log(`Request timed out, retrying... (${retryCount + 1}/2)`);
+        setTimeout(() => fetchRecommendations(retryCount + 1), 2000);
+        return;
+      }
+      
+      if (error.response && error.response.data && error.response.data.message) {
+        setError(`Failed to fetch recommendations: ${error.response.data.message}`);
+      } else if (error.code === 'ECONNABORTED') {
+        setError("Request timed out. The server might be busy. Please try refreshing the page.");
+      } else {
+        setError("Failed to fetch recommended videos. Please try again later.");
+      }
+    } finally {
+      setLoading(false);
+      setRetrying(false);
+    }
+  };
 
   useEffect(() => {
     if (!learnerData) return;
-    const fetchRecommendations = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        console.log("Calling AI API with learnerId:", learnerData?.uid);
-
-        if (!learnerData?.uid) {
-          setRecommendedVideos([]);
-          setLoading(false);
-          return;
-        }
-
-        const response = await api.post('/api/ai/match-videos', {
-          learnerId: learnerData.uid,
-        });
-
-        setRecommendedVideos(response.data.recommendedVideos || []);
-      } catch (error) {
-        console.error('Error fetching recommended videos:', error);
-        if (error.response && error.response.data && error.response.data.message) {
-          setError(`Failed to fetch recommendations: ${error.response.data.message}`);
-        } else {
-          setError("Failed to fetch recommended videos. Please try again later.");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
 
     if (learnerData) {
       fetchRecommendations();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [learnerData]);
 
   if (loading) {
     return <p>Loading recommendations...</p>;
   }
 
+  if (retrying) {
+    return <p>Retrying to load recommendations...</p>;
+  }
+
   if (error) {
-    return <p className="error-box">{error}</p>;
+    return (
+      <div className="error-box">
+        <p>{error}</p>
+        <button 
+          onClick={() => fetchRecommendations()} 
+          disabled={retrying}
+          className="retry-button"
+          style={{
+            marginTop: '10px',
+            padding: '8px 16px',
+            backgroundColor: retrying ? '#ccc' : '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: retrying ? 'not-allowed' : 'pointer'
+          }}
+        >
+          {retrying ? 'Retrying...' : 'Try Again'}
+        </button>
+      </div>
+    );
   }
 
   if (recommendedVideos.length === 0 && additionalCourses.length === 0) {
