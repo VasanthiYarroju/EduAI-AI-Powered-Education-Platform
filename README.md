@@ -1,5 +1,7 @@
 # Edu-AI 🌟 — AI-Powered Learning Platform
 
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20EduAI-brightgreen?style=for-the-badge&logo=vercel)](https://eduai-portal.vercel.app/)
+
 Edu-AI is a personalized, community-driven learning platform that connects learners with skilled volunteers, AI-powered mock assessments, and personalized content recommendations.
 
 ---
