@@ -119,6 +119,10 @@ The following approach outlines how Edu-AI leverages AI and modern technology to
 <img width="1920" height="1080" alt="Screenshot (321)" src="https://github.com/user-attachments/assets/3116f7ae-1212-46ed-b22f-00ac805e2901" />
 <img width="1920" height="1080" alt="Screenshot (322)" src="https://github.com/user-attachments/assets/dfcca495-0145-48e6-aaf3-3c4c46123fd2" />
 <img width="1206" height="909" alt="image" src="https://github.com/user-attachments/assets/d266129b-a2ef-40ba-98ff-ddac6327dd43" />
+<img width="624" height="842" alt="Screenshot 2025-09-11 163047" src="https://github.com/user-attachments/assets/1169119f-e803-4cec-893c-1b62f1796722" />
+<img width="619" height="833" alt="Screenshot 2025-09-11 163037" src="https://github.com/user-attachments/assets/df2708bb-66a8-40ef-be6e-a39bd940aa5e" />
+<img width="620" height="836" alt="Screenshot 2025-09-11 162946" src="https://github.com/user-attachments/assets/fddf0b4a-84a1-43f3-b3a7-892740d6a55c" />
+
 
 ---
 
