@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db, auth } from '../../firebase';
 import { Link } from 'react-router-dom';
-import { generateCertificate } from '../../utils/certificateGenerator'; // Import the utility
+import CertificateGenerator from '../../components/common/CertificateGenerator';
 import './Achievements.css'; // Assuming you have a CSS file for achievements
 
 const Achievements = () => {
   const [completedCourses, setCompletedCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [certificateMessage, setCertificateMessage] = useState('');
+  const [certificateError, setCertificateError] = useState('');
 
   useEffect(() => {
     const fetchCompletedCourses = async () => {
@@ -52,8 +54,16 @@ const Achievements = () => {
     fetchCompletedCourses();
   }, []);
 
-  const handleDownloadCertificate = (courseTitle, courseId) => {
-    generateCertificate(courseTitle, courseId);
+  // Certificate handlers
+  const handleCertificateSuccess = (message) => {
+    setCertificateMessage(message);
+    setCertificateError('');
+    setTimeout(() => setCertificateMessage(''), 3000);
+  };
+
+  const handleCertificateError = (error) => {
+    setCertificateError(error);
+    setCertificateMessage('');
   };
 
   if (loading) {
@@ -84,12 +94,26 @@ const Achievements = () => {
                 <h3>{course.title}</h3>
                 <p>Completed on: {course.completedAt ? course.completedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</p>
               </div>
-              <button
-                className="btn-download-certificate"
-                onClick={() => handleDownloadCertificate(course.title, course.id)}
-              >
-                ⬇️ Download Certificate
-              </button>
+              <CertificateGenerator
+                learnerData={{ 
+                  name: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || 'Student',
+                  uid: auth.currentUser?.uid 
+                }}
+                courseData={{ title: course.title, id: course.id }}
+                onSuccess={handleCertificateSuccess}
+                onError={handleCertificateError}
+              />
+              
+              {certificateMessage && (
+                <div style={{ color: 'green', marginTop: '10px', fontSize: '12px' }}>
+                  {certificateMessage}
+                </div>
+              )}
+              {certificateError && (
+                <div style={{ color: 'red', marginTop: '10px', fontSize: '12px' }}>
+                  {certificateError}
+                </div>
+              )}
             </div>
           ))}
         </div>

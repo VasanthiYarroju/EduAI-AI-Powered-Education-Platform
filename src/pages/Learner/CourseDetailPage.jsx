@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { doc, setDoc, getDoc, addDoc, collection, serverTimestamp } from 'firebase/firestore'; // Ensure all Firestore methods are imported
 import { db, auth } from '../../firebase'; // Ensure auth is imported from firebase
 import './CourseDetailPage.css';
-import { generateCertificate } from '../../utils/certificateGenerator';
+import CertificateGenerator from '../../components/common/CertificateGenerator';
 
 
 const CourseDetailPage = () => {
@@ -27,6 +27,10 @@ const CourseDetailPage = () => {
   const [feedbackText, setFeedbackText] = useState('');
   const [rating, setRating] = useState(0);
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+  
+  // Certificate states
+  const [certificateMessage, setCertificateMessage] = useState('');
+  const [certificateError, setCertificateError] = useState('');
 
 
   const handleSubmitFeedback = async () => {
@@ -117,10 +121,16 @@ const CourseDetailPage = () => {
     });
   };
 
-  // New function to handle only certificate download
-  const handleDownloadCertificateOnly = async () => {
-    // Call the shared utility function
-    generateCertificate(course.title, id);
+  // Certificate handlers
+  const handleCertificateSuccess = (message) => {
+    setCertificateMessage(message);
+    setCertificateError('');
+    setTimeout(() => setCertificateMessage(''), 3000);
+  };
+
+  const handleCertificateError = (error) => {
+    setCertificateError(error);
+    setCertificateMessage('');
   };
 
 
@@ -149,12 +159,11 @@ const CourseDetailPage = () => {
       setCourseCompleted(true);
       alert("Congratulations! Course completed!");
 
-      // Call the new function to download the certificate
-      handleDownloadCertificateOnly();
+      // Certificate will be available for download via the CertificateGenerator component
 
     } catch (error) {
-      console.error("Error completing course or generating certificate:", error);
-      alert("Failed to complete course or generate certificate. Please try again.");
+      console.error("Error completing course:", error);
+      alert("Failed to complete course. Please try again.");
     }
   };
 
@@ -497,12 +506,26 @@ const CourseDetailPage = () => {
               {courseCompleted ? (
                 <>
                   <p className="completed-text">✅ Course Completed!</p>
-                  <button
-                    className="btn-download-certificate"
-                    onClick={handleDownloadCertificateOnly}
-                  >
-                    ⬇️ Download Certificate
-                  </button>
+                  <CertificateGenerator
+                    learnerData={{ 
+                      name: auth.currentUser?.displayName || auth.currentUser?.email?.split('@')[0] || 'Student',
+                      uid: auth.currentUser?.uid 
+                    }}
+                    courseData={{ title: course?.title, id: course?.id }}
+                    onSuccess={handleCertificateSuccess}
+                    onError={handleCertificateError}
+                  />
+                  
+                  {certificateMessage && (
+                    <div style={{ color: 'green', marginTop: '10px', fontSize: '14px' }}>
+                      {certificateMessage}
+                    </div>
+                  )}
+                  {certificateError && (
+                    <div style={{ color: 'red', marginTop: '10px', fontSize: '14px' }}>
+                      {certificateError}
+                    </div>
+                  )}
 
                   {/* Feedback Form (only if course is completed) */}
                   <div className="feedback-section" style={{ marginTop: '1rem' }}>
