@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateCertificate, generateCertificateAPI } from '../utils/certificateGenerator';
+import { generateCertificate, generateCertificateAPI } from '../../utils/certificateGenerator';
 
 const CertificateGenerator = ({ learnerData, courseData, onSuccess, onError }) => {
   const [isGenerating, setIsGenerating] = useState(false);
